@@ -5,6 +5,7 @@
 
 static SDL_Color BLACK = {0,0,0,255};
 static SDL_Color GREY =  {128,128,128,255};
+static SDL_Color RED =  {255,0,0,255};
 class Renderer
 {
 public:
@@ -14,6 +15,7 @@ public:
     void clear();
     void present();
     void drawRect(const SDL_Rect& rect, const SDL_Color& color = BLACK);
+    void Renderer::fillRect(const SDL_Rect& rect, const SDL_Color& color = BLACK);
 
 private:
     SDL_Renderer* mRendererPtr;

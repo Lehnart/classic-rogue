@@ -25,14 +25,10 @@
  *  Main include header for the SDL library
  */
 
-
 #ifndef SDL_h_
 #define SDL_h_
 
-#pragma warning(disable : 4514)
-#pragma warning(disable : 4668)
-#pragma warning(disable : 4710)
-#pragma warning(disable : 4820)
+
 
 
 #include "SDL_main.h"

@@ -42,3 +42,12 @@ void Renderer::drawRect(const SDL_Rect& rect, const SDL_Color& color){
         std::cerr << "Error during drawRect " << SDL_GetError() << std::endl;
     }
 }
+
+void Renderer::fillRect(const SDL_Rect& rect, const SDL_Color& color){
+    int sdl_error = 0;
+    if(sdl_error==0) sdl_error = SDL_SetRenderDrawColor(mRendererPtr, color.r, color.g, color.b, color.a);
+    if(sdl_error==0) sdl_error = SDL_RenderFillRect(mRendererPtr, &rect);
+    if(sdl_error!=0){
+        std::cerr << "Error during fillRect " << SDL_GetError() << std::endl;
+    }
+}
