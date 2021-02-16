@@ -11,6 +11,9 @@ Renderer::Renderer(Window& window)
     if (mRendererPtr == NULL){
         std::cerr << "Could not create window: " << SDL_GetError() << std::endl;
     }
+    if(0!=SDL_SetRenderDrawBlendMode(mRendererPtr, SDL_BLENDMODE_BLEND)){
+        std::cerr << "Could not create window:" << SDL_GetError() << std::endl;
+    }
 }
 
 Renderer::~Renderer()
@@ -28,6 +31,13 @@ void  Renderer::clear(){
         std::cerr << "Error during clearing " << SDL_GetError() << std::endl;
     }
 
+}
+
+void Renderer::copy(SDL_Texture* texture, const SDL_Rect& srcRect, const SDL_Rect& destRect){
+
+    if (0 != SDL_RenderCopy(mRendererPtr, texture, &srcRect, &destRect) ){
+        std::cerr << "Error during copy " << SDL_GetError() << std::endl;
+    }
 }
 
 void Renderer::present(){

@@ -5,6 +5,7 @@
 #include "SDL2/SDL.h"
 
 #include "block.h"
+#include "clock.h"
 #include "hero.h"
 #include "renderer.h"
 #include "window.h"
@@ -27,6 +28,7 @@ int main(int argc, char* argv[])
     Renderer renderer(window);
 
     Hero hero(20,20);
+    Clock clock(600,464, renderer);
 
     bool is_running = true;
     while(is_running){
@@ -62,6 +64,7 @@ int main(int argc, char* argv[])
             }
         }
         hero.draw(renderer);
+        clock.draw(renderer);
 
         renderer.present();
     }

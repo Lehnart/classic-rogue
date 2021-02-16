@@ -13,10 +13,12 @@ public:
     ~Renderer();
 
     void clear();
+    void copy(SDL_Texture* texture, const SDL_Rect& srcRect, const SDL_Rect& destRect);
     void present();
     void drawRect(const SDL_Rect& rect, const SDL_Color& color = BLACK);
     void Renderer::fillRect(const SDL_Rect& rect, const SDL_Color& color = BLACK);
 
+    SDL_Renderer* get(){return mRendererPtr;}
 private:
     SDL_Renderer* mRendererPtr;
 };
