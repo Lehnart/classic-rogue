@@ -1,11 +1,10 @@
-
-
 #include <iostream>
 
 #include "SDL2/SDL.h"
 
 #include "block.h"
 #include "clock.h"
+#include "dungeon.h"
 #include "hero.h"
 #include "renderer.h"
 #include "window.h"
@@ -28,6 +27,7 @@ int main(int argc, char* argv[])
     Renderer renderer(window);
 
     Hero hero(20,20);
+    Dungeon dungeon(80,30);
     Clock clock(600,464, renderer);
 
     bool is_running = true;
@@ -57,12 +57,7 @@ int main(int argc, char* argv[])
 
         renderer.clear();
 
-        for(unsigned int i=0;i<WINDOW_WIDTH/BLOCK_WIDTH;i++){
-            for(unsigned  int j=0;j<WINDOW_HEIGHT/BLOCK_HEIGHT;j++){
-                Block b(i*BLOCK_WIDTH, j*BLOCK_HEIGHT);
-                b.draw(renderer);
-            }
-        }
+        dungeon.draw(renderer);
         hero.draw(renderer);
         clock.draw(renderer);
 
