@@ -3,9 +3,13 @@
 
 #include "window.h"
 
-static SDL_Color BLACK = {0,0,0,255};
-static SDL_Color GREY =  {128,128,128,255};
-static SDL_Color RED =  {255,0,0,255};
+static SDL_Color BLACK       =  {0  ,   0,   0, 255};
+static SDL_Color GREY_DARK   =  {192, 192, 192, 255};
+static SDL_Color GREY        =  {128, 128, 128, 255};
+static SDL_Color GREY_LIGHT  =  { 64,  64,  64, 255};
+static SDL_Color RED         =  {255,   0,   0, 255};
+static SDL_Color BROWN       =  {201, 150,  30, 255};
+
 class Renderer
 {
 public:

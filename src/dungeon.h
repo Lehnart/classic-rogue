@@ -8,19 +8,20 @@
 enum BlockType{
     none = 0,
     ground = 1,
-    wall = 2
+    wall = 2,
+    corridor =3,
 };
 
-const int MIN_ROOM_SIZE = 3;
-const int MAX_ROOM_SIZE = 6;
-const int MIN_ROOM_COUNT = 10;
-const int MAX_ROOM_COUNT = 20;
+
 
 class Room{
 public:
     Room(int x, int y, int w, int h);
     Room(const Room& room);
     Room();
+
+    int xc() const {return mX + (mWidth/2);}
+    int yc() const {return mY + (mHeight/2);}
 
 private:
     unsigned int mX;
@@ -42,8 +43,10 @@ private:
 
     void initialize();
     void generateRandomDungeon();
-    std::vector<Room> generateRooms();
     Room generateRoom();
+    std::vector<Room> generateRooms();
+    void connectRooms(std::vector<Room> rooms);
+    void connect2Rooms(const Room& room1, const Room& room2);
 
     BlockType block(int x, int y) const;
 

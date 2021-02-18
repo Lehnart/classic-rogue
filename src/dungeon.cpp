@@ -8,6 +8,11 @@
 
 #include <SDL2/SDL.h>
 
+#define MIN_ROOM_SIZE  3
+#define MAX_ROOM_SIZE  6
+#define MIN_ROOM_COUNT 5
+#define MAX_ROOM_COUNT 10
+
 Room::Room(int x, int y, int width, int height):
     mX(x),
     mY(y),
@@ -58,10 +63,15 @@ void Dungeon::draw(Renderer& renderer) const{
     }
 }
 
+void Dungeon::reset(){
+    this->~Dungeon();
+    generateRandomDungeon();
+}
 
 void Dungeon::generateRandomDungeon(){
     initialize();
-    generateRooms();
+    std::vector<Room> rooms = generateRooms();
+    connectRooms(rooms);
 }
 
 void Dungeon::initialize(){
@@ -74,18 +84,13 @@ void Dungeon::initialize(){
     }
 }
 
-void Dungeon::reset(){
-    this->~Dungeon();
-    generateRandomDungeon();
-}
-
 std::vector<Room> Dungeon::generateRooms(){
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> roomSizeRand(MIN_ROOM_COUNT, MAX_ROOM_COUNT);
 
     int nRooms = roomSizeRand(gen);
-    std::vector<Room> rooms(static_cast<unsigned long>(nRooms));
+    std::vector<Room> rooms;
 
     for(int i = 0 ; i < nRooms; i++){
         Room room = generateRoom();
@@ -130,6 +135,47 @@ Room Dungeon::generateRoom(){
     }
 
     return Room(xMin, yMin, width, height);
+}
+
+void Dungeon::connectRooms(std::vector<Room> rooms){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::vector<Room> connected_rooms;
+
+    while(!rooms.empty()){
+        Room room = rooms.back();
+        rooms.pop_back();
+
+        if(connected_rooms.empty()){
+            connected_rooms.push_back(room);
+            continue;
+        }
+
+        std::uniform_int_distribution<> roomRand(0, connected_rooms.size()-1);
+        int roomIndex = roomRand(gen);
+        const Room& connected_room = connected_rooms[roomIndex];
+        connect2Rooms(room, connected_room);
+        connected_rooms.push_back(room);
+    }
+}
+
+void Dungeon::connect2Rooms(const Room& room1, const Room& room2){
+    int x1 = room1.xc();
+    int x2 = room2.xc();
+    int y1 = room1.yc();
+    int y2 = room2.yc();
+
+    int xmin = x1 > x2 ? x2 : x1;
+    int xmax = x1 > x2 ? x1 : x2;
+    int ymin = y1 > y2 ? y2 : y1;
+    int ymax = y1 > y2 ? y1 : y2;
+
+    for(int i=xmin; i<=xmax; i++){
+        mDungeonBlocks[y1][i] = BlockType::ground;
+    }
+    for(int j=ymin; j<=ymax; j++){
+        mDungeonBlocks[j][x2] = BlockType::ground;
+    }
 }
 
 BlockType Dungeon::block(int x, int y) const{
