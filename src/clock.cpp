@@ -17,6 +17,12 @@ Clock::Clock(unsigned int x, unsigned int y, Renderer& renderer):
     SDL_FreeSurface(fontSurface);
 }
 
+Clock::~Clock(){
+    if(mFontTexture != nullptr){
+        SDL_DestroyTexture(mFontTexture);
+    }
+}
+
 void Clock::draw(Renderer& renderer) const{
 
     SDL_Rect src_rect;
@@ -24,7 +30,6 @@ void Clock::draw(Renderer& renderer) const{
     src_rect.y = 0;
     src_rect.w = BLOCK_WIDTH;
     src_rect.h = BLOCK_HEIGHT;
-
 
     std::time_t t = std::time(0);   // get time now
     std::tm* now = std::localtime(&t);

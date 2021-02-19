@@ -10,6 +10,7 @@ class Clock{
 
 public:
     Clock(unsigned int x, unsigned int y, Renderer& renderer);
+    ~Clock();
 
     void draw(Renderer& renderer) const;
 

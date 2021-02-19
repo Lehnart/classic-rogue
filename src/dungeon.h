@@ -3,16 +3,8 @@
 
 #include <vector>
 
+#include "block.h"
 #include "renderer.h"
-
-enum BlockType{
-    none = 0,
-    ground = 1,
-    wall = 2,
-    corridor =3,
-};
-
-
 
 class Room{
 public:
@@ -48,12 +40,12 @@ private:
     void connectRooms(std::vector<Room> rooms);
     void connect2Rooms(const Room& room1, const Room& room2);
 
-    BlockType block(int x, int y) const;
+    Block block(int x, int y) const;
 
 private:
     const int mWidth;
     const int mHeight;
-    BlockType** mDungeonBlocks;
+    Block** mDungeonBlocks;
 };
 
 

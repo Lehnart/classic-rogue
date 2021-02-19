@@ -8,8 +8,8 @@
 
 #include <SDL2/SDL.h>
 
-#define MIN_ROOM_SIZE  3
-#define MAX_ROOM_SIZE  6
+#define MIN_ROOM_SIZE  4
+#define MAX_ROOM_SIZE  7
 #define MIN_ROOM_COUNT 5
 #define MAX_ROOM_COUNT 10
 
@@ -45,20 +45,7 @@ Dungeon::~Dungeon(){
 void Dungeon::draw(Renderer& renderer) const{
     for(int j = 0; j < mHeight; j++){
         for(int i = 0; i < mWidth; i++){
-            SDL_Rect rect;
-            rect.x = i * BLOCK_WIDTH;
-            rect.y = j * BLOCK_HEIGHT;
-            rect.w = BLOCK_WIDTH;
-            rect.h = BLOCK_HEIGHT;
-
-            BlockType type = block(i,j);
-
-            if(wall == type){
-                renderer.fillRect(rect,BLACK);
-            }
-            if(ground == type){
-                renderer.fillRect(rect,GREY);
-            }
+            block(i,j).draw(renderer);
         }
     }
 }
@@ -75,11 +62,13 @@ void Dungeon::generateRandomDungeon(){
 }
 
 void Dungeon::initialize(){
-    mDungeonBlocks = new BlockType*[mHeight];
+    mDungeonBlocks = new Block*[mHeight];
     for(int j = 0; j < mHeight; j++){
-        mDungeonBlocks[j] = new BlockType[mWidth];
+        mDungeonBlocks[j] = new Block[mWidth];
         for(int i = 0; i < mWidth; i++){
-            mDungeonBlocks[j][i]=BlockType::wall;
+            mDungeonBlocks[j][i].setX(i*BLOCK_WIDTH);
+            mDungeonBlocks[j][i].setY(j*BLOCK_HEIGHT);
+            mDungeonBlocks[j][i].setType(BlockType::none);
         }
     }
 }
@@ -121,18 +110,32 @@ Room Dungeon::generateRoom(){
 
         for(int j = yMin-1; j < yMin + height + 1; j++){
             for(int i=xMin-1; i < xMin + width + 1; i++){
-                if(block(i,j) == BlockType::ground){
+                if(block(i,j).getType() != BlockType::none){
                     isEmpty = false;
                 }
             }
         }
     } while( !isEmpty );
 
-    for(int i = xMin; i < xMin + width; i++){
-        for(int j=yMin; j < yMin + height; j++){
-            mDungeonBlocks[j][i] = BlockType::ground;
+    for(int i = xMin+1; i < xMin + width-1; i++){
+        for(int j=yMin+1; j < yMin + height-1; j++){
+            mDungeonBlocks[j][i].setType(BlockType::ground);
         }
     }
+
+    for(int i = xMin+1; i < xMin + width-1; i++){
+        mDungeonBlocks[yMin][i].setType(BlockType::hwall);
+        mDungeonBlocks[yMin + height-1][i].setType(BlockType::hwall);
+    }
+    for(int j=yMin+1; j < yMin + height-1; j++){
+        mDungeonBlocks[j][xMin].setType(BlockType::vwall);
+        mDungeonBlocks[j][xMin + width-1].setType(BlockType::vwall);
+    }
+
+    mDungeonBlocks[yMin][xMin].setType(BlockType::urwall);
+    mDungeonBlocks[yMin][xMin + width-1].setType(BlockType::ulwall);
+    mDungeonBlocks[yMin+height-1][xMin].setType(BlockType::drwall);
+    mDungeonBlocks[yMin+height-1][xMin+width-1].setType(BlockType::dlwall);
 
     return Room(xMin, yMin, width, height);
 }
@@ -171,14 +174,29 @@ void Dungeon::connect2Rooms(const Room& room1, const Room& room2){
     int ymax = y1 > y2 ? y1 : y2;
 
     for(int i=xmin; i<=xmax; i++){
-        mDungeonBlocks[y1][i] = BlockType::ground;
+        if (mDungeonBlocks[y1][i].getType()!=BlockType::ground){
+            if (mDungeonBlocks[y1][i].getType()==BlockType::vwall){
+                mDungeonBlocks[y1][i].setType(BlockType::hdoor);
+            }
+            else if (mDungeonBlocks[y1][i].getType()==BlockType::none){
+                mDungeonBlocks[y1][i].setType(BlockType::corridor);
+            }
+        }
     }
+
     for(int j=ymin; j<=ymax; j++){
-        mDungeonBlocks[j][x2] = BlockType::ground;
+        if (mDungeonBlocks[j][x2].getType()!=BlockType::ground){
+            if (mDungeonBlocks[j][x2].getType()==BlockType::hwall){
+                mDungeonBlocks[j][x2].setType(BlockType::vdoor);
+            }
+            else if (mDungeonBlocks[j][x2].getType()==BlockType::none){
+                mDungeonBlocks[j][x2].setType(BlockType::corridor);
+            }
+        }
     }
 }
 
-BlockType Dungeon::block(int x, int y) const{
+Block Dungeon::block(int x, int y) const{
     return mDungeonBlocks[y][x];
 }
 

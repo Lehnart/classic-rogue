@@ -23,6 +23,7 @@ public:
     void Renderer::fillRect(const SDL_Rect& rect, const SDL_Color& color = BLACK);
 
     SDL_Renderer* get(){return mRendererPtr;}
+
 private:
     SDL_Renderer* mRendererPtr;
 };
