@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     Window window;
     Renderer renderer(window);
 
-    Hero hero(20,20);
+    Hero hero(20,20, renderer);
     Dungeon dungeon(80,30);
     Clock clock(600,464, renderer);
 

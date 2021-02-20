@@ -19,6 +19,11 @@ Block::Block(unsigned int x0, unsigned int y0, BlockType blockType):
     mRect.h = BLOCK_HEIGHT;
 }
 
+Block::~Block(){
+    if(mTexture == nullptr){
+        SDL_DestroyTexture(mTexture);
+    }
+}
 
 void Block::draw(Renderer& renderer){
 

@@ -8,7 +8,7 @@
 class Hero
 {
 public:
-    Hero(unsigned int x, unsigned int y);
+    Hero(unsigned int x, unsigned int y, Renderer& renderer);
 
     void draw(Renderer& renderer) const;
 
@@ -17,6 +17,7 @@ public:
 
 private:
     SDL_Rect mRect;
+    SDL_Texture* mTexture;
 };
 
 #endif // HERO_H

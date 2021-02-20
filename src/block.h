@@ -25,6 +25,7 @@ class Block
 public:
     Block();
     Block(unsigned int x0, unsigned int y0, BlockType type);
+    ~Block();
 
     void draw(Renderer& renderer);
 
