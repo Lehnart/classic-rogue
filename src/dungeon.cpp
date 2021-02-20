@@ -5,13 +5,14 @@
 
 #include <vector>
 #include <random>
+#include <iostream>
 
 #include <SDL2/SDL.h>
 
-#define MIN_ROOM_SIZE  4
-#define MAX_ROOM_SIZE  7
-#define MIN_ROOM_COUNT 5
-#define MAX_ROOM_COUNT 10
+#define MIN_ROOM_SIZE  5
+#define MAX_ROOM_SIZE  8
+#define MIN_ROOM_COUNT 10
+#define MAX_ROOM_COUNT 15
 
 Room::Room(int x, int y, int width, int height):
     mX(x),
@@ -26,6 +27,16 @@ Room::Room(const Room& room):
 
 Room::Room():
     Room(0, 0, 1, 1){
+}
+
+int Room::randomX(std::random_device& rand) const {
+    std::uniform_int_distribution<> roomXRand(mX+1, mX+mWidth-2);
+    return roomXRand(rand);
+}
+
+int Room::randomY(std::random_device& rand) const {
+    std::uniform_int_distribution<> roomYRand(mY+1, mY+mHeight-2);
+    return roomYRand(rand);
 }
 
 Dungeon::Dungeon(int w, int h):
@@ -74,11 +85,9 @@ void Dungeon::initialize(){
 }
 
 std::vector<Room> Dungeon::generateRooms(){
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_int_distribution<> roomSizeRand(MIN_ROOM_COUNT, MAX_ROOM_COUNT);
 
-    int nRooms = roomSizeRand(gen);
+    int nRooms = roomSizeRand(mRandomGenerator);
     std::vector<Room> rooms;
 
     for(int i = 0 ; i < nRooms; i++){
@@ -89,8 +98,6 @@ std::vector<Room> Dungeon::generateRooms(){
 }
 
 Room Dungeon::generateRoom(){
-    std::random_device rd;
-    std::mt19937 gen(rd());
 
     bool isEmpty = true;
     int yMin =0, xMin =0, width =0, height =0;
@@ -98,15 +105,15 @@ Room Dungeon::generateRoom(){
         isEmpty = true;
         std::uniform_int_distribution<> roomSizeRand(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
 
-        width = roomSizeRand(gen);
-        height = roomSizeRand(gen);
+        width = roomSizeRand(mRandomGenerator);
+        height = roomSizeRand(mRandomGenerator);
         int xMax = static_cast<int>(mWidth) - width - 1;
         int yMax = static_cast<int>(mHeight) - height - 1;
 
         std::uniform_int_distribution<> topRand(1, yMax);
         std::uniform_int_distribution<> leftRand(1, xMax);
-        yMin = topRand(gen);
-        xMin = leftRand(gen);
+        yMin = topRand(mRandomGenerator);
+        xMin = leftRand(mRandomGenerator);
 
         for(int j = yMin-1; j < yMin + height + 1; j++){
             for(int i=xMin-1; i < xMin + width + 1; i++){
@@ -141,13 +148,10 @@ Room Dungeon::generateRoom(){
 }
 
 void Dungeon::connectRooms(std::vector<Room> rooms){
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::vector<Room> connected_rooms;
 
     while(!rooms.empty()){
         Room room = rooms.back();
-        rooms.pop_back();
 
         if(connected_rooms.empty()){
             connected_rooms.push_back(room);
@@ -155,23 +159,47 @@ void Dungeon::connectRooms(std::vector<Room> rooms){
         }
 
         std::uniform_int_distribution<> roomRand(0, connected_rooms.size()-1);
-        int roomIndex = roomRand(gen);
+        int roomIndex = roomRand(mRandomGenerator);
         const Room& connected_room = connected_rooms[roomIndex];
-        connect2Rooms(room, connected_room);
-        connected_rooms.push_back(room);
+
+        if(connect2Rooms(room, connected_room)){
+            connected_rooms.push_back(room);
+            rooms.pop_back();
+        }
     }
 }
 
-void Dungeon::connect2Rooms(const Room& room1, const Room& room2){
-    int x1 = room1.xc();
-    int x2 = room2.xc();
-    int y1 = room1.yc();
-    int y2 = room2.yc();
+bool Dungeon::connect2Rooms(const Room& room1, const Room& room2){
+    int x1 = room1.randomX(mRandomGenerator);
+    int x2 = room2.randomX(mRandomGenerator);
+    int y1 = room1.randomY(mRandomGenerator);
+    int y2 = room2.randomY(mRandomGenerator);
 
     int xmin = x1 > x2 ? x2 : x1;
     int xmax = x1 > x2 ? x1 : x2;
     int ymin = y1 > y2 ? y2 : y1;
     int ymax = y1 > y2 ? y1 : y2;
+
+
+    for(int i=xmin; i<=xmax; i++){
+        if (   mDungeonBlocks[y1][i].getType()!=BlockType::ground
+            && mDungeonBlocks[y1][i].getType()!=BlockType::corridor
+            && mDungeonBlocks[y1][i].getType()!=BlockType::vwall
+            && mDungeonBlocks[y1][i].getType()!=BlockType::none)
+        {
+            return false;
+        }
+    }
+
+    for(int j=ymin; j<=ymax; j++){
+        if (   mDungeonBlocks[j][x2].getType()!=BlockType::ground
+            && mDungeonBlocks[j][x2].getType()!=BlockType::corridor
+            && mDungeonBlocks[j][x2].getType()!=BlockType::hwall
+            && mDungeonBlocks[j][x2].getType()!=BlockType::none)
+        {
+            return false;
+        }
+    }
 
     for(int i=xmin; i<=xmax; i++){
         if (mDungeonBlocks[y1][i].getType()!=BlockType::ground){
@@ -194,6 +222,7 @@ void Dungeon::connect2Rooms(const Room& room1, const Room& room2){
             }
         }
     }
+    return true;
 }
 
 Block Dungeon::block(int x, int y) const{

@@ -1,6 +1,7 @@
 #ifndef DUNGEON_H
 #define DUNGEON_H
 
+#include <random>
 #include <vector>
 
 #include "block.h"
@@ -14,6 +15,9 @@ public:
 
     int xc() const {return mX + (mWidth/2);}
     int yc() const {return mY + (mHeight/2);}
+
+    int randomX(std::random_device& rand) const ;
+    int randomY(std::random_device& rand) const ;
 
 private:
     unsigned int mX;
@@ -38,7 +42,7 @@ private:
     Room generateRoom();
     std::vector<Room> generateRooms();
     void connectRooms(std::vector<Room> rooms);
-    void connect2Rooms(const Room& room1, const Room& room2);
+    bool connect2Rooms(const Room& room1, const Room& room2);
 
     Block block(int x, int y) const;
 
@@ -46,6 +50,8 @@ private:
     const int mWidth;
     const int mHeight;
     Block** mDungeonBlocks;
+
+    std::random_device mRandomGenerator;
 };
 
 
