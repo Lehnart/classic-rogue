@@ -258,13 +258,24 @@ void Dungeon::view(unsigned int povX, unsigned int povY){
         return;
     }
     else if (type == BlockType::corridor){
-
+        block(povX  ,povY  ).setVisible();
         block(povX+1,povY  ).setVisible();
         block(povX  ,povY+1).setVisible();
         block(povX-1,povY  ).setVisible();
         block(povX  ,povY-1).setVisible();
     }
 }
+
+void Dungeon::getRandomRoomPosition(int& x, int& y){
+    std::uniform_int_distribution<> roomRand(0, mRooms.size()-1);
+    int roomIndex = roomRand(mRandomGenerator);
+    const Room room = mRooms[roomIndex];
+
+    x = room.randomX(mRandomGenerator);
+    y = room.randomY(mRandomGenerator);
+}
+
+
 
 Block& Dungeon::block(int x, int y) const{
     return mDungeonBlocks[y][x];

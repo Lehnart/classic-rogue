@@ -37,6 +37,8 @@ public:
     void draw(Renderer& renderer) const;
     void view(unsigned int povX, unsigned int povY);
 
+    void getRandomRoomPosition(int& x, int& y);
+
 private:
 
     void initialize();
