@@ -19,7 +19,8 @@ public:
     int randomX(std::random_device& rand) const ;
     int randomY(std::random_device& rand) const ;
 
-private:
+    bool isIn(unsigned int x, unsigned int y) const;
+
     unsigned int mX;
     unsigned int mY;
     unsigned int mWidth;
@@ -34,6 +35,7 @@ public:
 
     void reset();
     void draw(Renderer& renderer) const;
+    void view(unsigned int povX, unsigned int povY);
 
 private:
 
@@ -44,12 +46,15 @@ private:
     void connectRooms(std::vector<Room> rooms);
     bool connect2Rooms(const Room& room1, const Room& room2);
 
-    Block block(int x, int y) const;
+
+
+    Block& block(int x, int y) const;
 
 private:
     const int mWidth;
     const int mHeight;
     Block** mDungeonBlocks;
+    std::vector<Room> mRooms;
 
     std::random_device mRandomGenerator;
 };

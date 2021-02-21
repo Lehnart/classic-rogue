@@ -34,8 +34,11 @@ public:
     void setX(int x){ mRect.x = x;}
     void setY(int y){ mRect.y = y;}
     void setType(BlockType type){ mType = type;}
+    void setVisible(){ mIsVisible = true; }
 
 private:
+
+    bool mIsVisible;
 
     SDL_Rect mRect;
     BlockType mType;

@@ -55,6 +55,8 @@ int main(int argc, char* argv[])
             }
         }
 
+        dungeon.view(hero.getBlockX(),hero.getBlockY());
+
         renderer.clear();
 
         dungeon.draw(renderer);

@@ -39,6 +39,10 @@ int Room::randomY(std::random_device& rand) const {
     return roomYRand(rand);
 }
 
+bool Room::isIn(unsigned int x, unsigned int y) const{
+    return x >= mX && x < mX + mWidth && y >= mY && y < mY + mHeight;
+}
+
 Dungeon::Dungeon(int w, int h):
     mWidth(w),
     mHeight(h)
@@ -68,8 +72,8 @@ void Dungeon::reset(){
 
 void Dungeon::generateRandomDungeon(){
     initialize();
-    std::vector<Room> rooms = generateRooms();
-    connectRooms(rooms);
+    mRooms = generateRooms();
+    connectRooms(mRooms);
 }
 
 void Dungeon::initialize(){
@@ -225,7 +229,44 @@ bool Dungeon::connect2Rooms(const Room& room1, const Room& room2){
     return true;
 }
 
-Block Dungeon::block(int x, int y) const{
+void Dungeon::view(unsigned int povX, unsigned int povY){
+    BlockType type = block(povX,povY).getType();
+
+    if(    type == BlockType::ground
+        || type == BlockType::vdoor
+        || type == BlockType::hdoor){
+        for(const Room& room : mRooms){
+            if(!room.isIn(povX,povY)){
+                continue;
+            }
+            for (unsigned int x = room.mX; x < room.mX + room.mWidth; x++){
+                for (unsigned int y = room.mY; y < room.mY + room.mHeight; y++){
+                    block(x,y).setVisible();
+                }
+            }
+            return;
+        }
+    }
+    else if (   type == BlockType::vwall
+             || type == BlockType::hwall
+             || type == BlockType::ulwall
+             || type == BlockType::urwall
+             || type == BlockType::dlwall
+             || type == BlockType::drwall
+             || type == BlockType::none
+             ){
+        return;
+    }
+    else if (type == BlockType::corridor){
+
+        block(povX+1,povY  ).setVisible();
+        block(povX  ,povY+1).setVisible();
+        block(povX-1,povY  ).setVisible();
+        block(povX  ,povY-1).setVisible();
+    }
+}
+
+Block& Dungeon::block(int x, int y) const{
     return mDungeonBlocks[y][x];
 }
 

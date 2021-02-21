@@ -11,6 +11,7 @@ Block::Block():
 
 
 Block::Block(unsigned int x0, unsigned int y0, BlockType blockType):
+    mIsVisible(false),
     mType(blockType)
 {
     mRect.x = x0;
@@ -26,6 +27,10 @@ Block::~Block(){
 }
 
 void Block::draw(Renderer& renderer){
+
+    if(!mIsVisible){
+        return;
+    }
 
     if(mTexture == nullptr){
         SDL_Surface* blockSurface = SDL_LoadBMP(BLOCK_BMP_PATH);
