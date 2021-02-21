@@ -36,6 +36,8 @@ public:
     void setType(BlockType type){ mType = type;}
     void setVisible(){ mIsVisible = true; }
 
+    bool isWalkable() const;
+
 private:
 
     bool mIsVisible;

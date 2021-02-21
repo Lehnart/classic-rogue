@@ -43,17 +43,24 @@ int main(int argc, char* argv[])
             }
 
             if(event.type == SDL_KEYDOWN){
+                int bx = hero.getBlockX();
+                int by = hero.getBlockY();
+
                 if(event.key.keysym.sym == SDLK_UP){
-                    hero.getY()-=BLOCK_HEIGHT;
+                    Block& b = dungeon.block(bx,by-1);
+                    if(b.isWalkable()) hero.getY()-=BLOCK_HEIGHT;
                 }
                 else if(event.key.keysym.sym == SDLK_DOWN){
-                    hero.getY()+=BLOCK_HEIGHT;
+                    Block& b = dungeon.block(bx,by+1);
+                    if(b.isWalkable())hero.getY()+=BLOCK_HEIGHT;
                 }
                 if(event.key.keysym.sym == SDLK_LEFT){
-                    hero.getX()-=BLOCK_WIDTH;
+                    Block& b = dungeon.block(bx-1,by);
+                    if(b.isWalkable())hero.getX()-=BLOCK_WIDTH;
                 }
                 else if(event.key.keysym.sym == SDLK_RIGHT){
-                    hero.getX()+=BLOCK_WIDTH;
+                    Block& b = dungeon.block(bx+1,by);
+                    if(b.isWalkable())hero.getX()+=BLOCK_WIDTH;
                 }
             }
         }

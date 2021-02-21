@@ -39,6 +39,7 @@ public:
 
     void getRandomRoomPosition(int& x, int& y);
 
+    Block& block(int x, int y) const;
 private:
 
     void initialize();
@@ -50,7 +51,7 @@ private:
 
 
 
-    Block& block(int x, int y) const;
+
 
 private:
     const int mWidth;

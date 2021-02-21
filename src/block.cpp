@@ -26,6 +26,13 @@ Block::~Block(){
     }
 }
 
+bool Block::isWalkable() const{
+    return ( mType == ground ||
+            mType == vdoor ||
+            mType == hdoor ||
+            mType == corridor );
+}
+
 void Block::draw(Renderer& renderer){
 
     if(!mIsVisible){
