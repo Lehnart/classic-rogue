@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "block.h"
+#include "goldpile.h"
 #include "renderer.h"
 
 class Room{
@@ -36,10 +37,11 @@ public:
     void reset();
     void draw(Renderer& renderer) const;
     void view(unsigned int povX, unsigned int povY);
-
     void getRandomRoomPosition(int& x, int& y);
-
     Block& block(int x, int y) const;
+
+    std::vector<Room>& getRooms() {return mRooms;}
+
 private:
 
     void initialize();
@@ -49,15 +51,15 @@ private:
     void connectRooms(std::vector<Room> rooms);
     bool connect2Rooms(const Room& room1, const Room& room2);
 
-
-
-
+    void generateGold(const Room& room);
 
 private:
     const int mWidth;
     const int mHeight;
     Block** mDungeonBlocks;
     std::vector<Room> mRooms;
+
+    std::vector<GoldPile> mGoldPiles;
 
     std::random_device mRandomGenerator;
 };

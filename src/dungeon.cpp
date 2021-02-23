@@ -1,6 +1,7 @@
 #include "dungeon.h"
 
 #include "block.h"
+#include "goldpile.h"
 #include "renderer.h"
 
 #include <vector>
@@ -13,6 +14,8 @@
 #define MAX_ROOM_SIZE  8
 #define MIN_ROOM_COUNT 10
 #define MAX_ROOM_COUNT 15
+
+#define GOLD_PROBABILITY_PER_ROOM 0.20
 
 Room::Room(int x, int y, int width, int height):
     mX(x),
@@ -63,6 +66,14 @@ void Dungeon::draw(Renderer& renderer) const{
             block(i,j).draw(renderer);
         }
     }
+
+    for(const GoldPile& goldPile : mGoldPiles){
+        int x = goldPile.getX();
+        int y = goldPile.getY();
+        if( block(x,y).isVisible() ){
+            goldPile.draw(renderer);
+        }
+    }
 }
 
 void Dungeon::reset(){
@@ -97,6 +108,7 @@ std::vector<Room> Dungeon::generateRooms(){
     for(int i = 0 ; i < nRooms; i++){
         Room room = generateRoom();
         rooms.emplace_back(room);
+        generateGold(room);
     }
     return rooms;
 }
@@ -227,6 +239,19 @@ bool Dungeon::connect2Rooms(const Room& room1, const Room& room2){
         }
     }
     return true;
+}
+
+void Dungeon::generateGold(const Room& room){
+    std::uniform_real_distribution<> goldRand;
+    double goldProb = goldRand(mRandomGenerator);
+    if (goldProb > GOLD_PROBABILITY_PER_ROOM){
+        return;
+    }
+
+    int x = room.randomX(mRandomGenerator);
+    int y = room.randomY(mRandomGenerator);
+
+    mGoldPiles.push_back(GoldPile(x,y));
 }
 
 void Dungeon::view(unsigned int povX, unsigned int povY){

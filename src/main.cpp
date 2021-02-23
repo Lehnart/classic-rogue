@@ -5,6 +5,7 @@
 #include "block.h"
 #include "clock.h"
 #include "dungeon.h"
+#include "goldpile.h"
 #include "hero.h"
 #include "renderer.h"
 #include "window.h"
@@ -31,6 +32,8 @@ int main(int argc, char* argv[])
     int x,y;
     dungeon.getRandomRoomPosition(x,y);
     Hero hero(x,y, renderer);
+
+
     Clock clock(600,464, renderer);
 
     bool is_running = true;
